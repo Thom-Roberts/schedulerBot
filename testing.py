@@ -1,9 +1,13 @@
-#Just using to test conversion between values
+import requests
 
-number = 2600
-stringNumber = "2500.60"
+apiKey = '13c40a7680f1a39e960be305fa7e46f2'
+zip = "84037"
+metric = "&units=metric"
+url = "http://api.openweathermap.org/data/2.5/weather?zip=" + zip + "&APPID=" + apiKey + metric
+response = requests.get(url)
+value = response.json()
 
-if float(stringNumber) > number:
-    print ("Told ya so")
-else:
-    print ("Not fair")
+temp = (float(value['main']['temp']) * 1.8) + 32
+intTemp = int(temp)
+
+print (intTemp)
