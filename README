@@ -1,0 +1,5 @@
+To run the bot, type this into your terminal:
+python3 ./bot.py
+
+Make sure you have python3 installed, which you can check by typing python3 in the terminal
+If you don't have it installed, 'sudo apt-get install python3'
