@@ -29,6 +29,16 @@ async def play():
 async def sean():
     await client.say("Seansux")
 
+#NOTE: figure out a way to get this activating daily?
+#see discord python tutorial part 2
+@client.command()
+async def motivate():
+    url = "http://quotes.rest/qod.json"
+    response = requests.get(url)
+    value = response.json()
+    qod = value['contents']['quotes'][0]['quote']
+    await client.say(qod)
+
 @client.command()
 async def weather(zip : str):
     print (zip)
