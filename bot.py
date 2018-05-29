@@ -29,6 +29,14 @@ async def play():
 async def sean():
     await client.say("Seansux")
 
+@client.command()
+async def sports():
+    await client.say("Never play MLB The Show, not even once")
+
+@client.command()
+async def scoops():
+    await client.say("#chrispaulsux")
+
 #NOTE: figure out a way to get this activating daily?
 #see discord python tutorial part 2
 @client.command()
@@ -41,7 +49,6 @@ async def motivate():
 
 @client.command()
 async def weather(zip : str):
-    print (zip)
     apiKey = '13c40a7680f1a39e960be305fa7e46f2'
     metric = "&units=metric"
     url = "http://api.openweathermap.org/data/2.5/weather?zip=" + zip + "&APPID=" + apiKey + metric
@@ -52,7 +59,6 @@ async def weather(zip : str):
         temp = (float(value['main']['temp']) * 1.8) + 32
         intTemp = int(temp)
 
-        print (intTemp)
         await client.say("The temperature at zip code " + zip + " is " + str(intTemp))
     except requests.exceptions.RequestException as e:  # This is the correct syntax
         await client.say("Uh, we failed cap'n")
