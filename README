@@ -3,3 +3,5 @@ python3 ./bot.py
 
 Make sure you have python3 installed, which you can check by typing python3 in the terminal
 If you don't have it installed, 'sudo apt-get install python3'
+
+A good tutorial is located here: https://discordpy.readthedocs.io/en/rewrite/ext/commands/commands.html
