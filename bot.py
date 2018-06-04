@@ -21,7 +21,7 @@ async def invest():
     await client.say("Bitcoin price is: " + value)
 
 @client.command()
-async def sean():
+async def jeebs():
     userName = "sr_jeebs/"
     getUserUrl = "https://www.bungie.net/Platform//Destiny2/SearchDestinyPlayer/2/" + userName
     response = requests.get(getUserUrl, headers={"X-API-Key": BUNGIEAPIKEY})
@@ -98,6 +98,24 @@ async def getKd(userName : str):
     killDeath = round((kills/deaths), 2)
 
     await client.say("PVP kill/death: " + str(killDeath))
+
+@client.command()
+async def efficiency(userName : str):
+    getUserUrl = "https://www.bungie.net/Platform//Destiny2/SearchDestinyPlayer/2/" + userName
+    response = requests.get(getUserUrl, headers={"X-API-Key": BUNGIEAPIKEY})
+    value = response.json()
+    membershipId = value["Response"][0]["membershipId"] #gets a bungie user membershipId
+
+    getStatsUrl = "https://www.bungie.net/Platform/Destiny2/2/Account/" + membershipId + "/Stats/"
+    response2 = requests.get(getStatsUrl, headers={"X-API-Key": BUNGIEAPIKEY})
+    value2 = response2.json()
+
+    kills = value2["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["kills"]["basic"]["value"]
+    deaths = value2["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["deaths"]["basic"]["value"]
+    assists = value2["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["assists"]["basic"]["value"]
+    efficiency = round(((kills + assists)/deaths), 2)
+
+    await client.say("PVP efficiency: " + str(efficiency))
 
 @client.command()
 async def helloWorld():
