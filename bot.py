@@ -1,11 +1,12 @@
 # https://github.com/Rapptz/discord.py/blob/async/examples/reply.py
 #import discord
-import requests
+import requests #allows for the api calls
 
 from discord.ext.commands import Bot
 from TOKEN import TOKEN #gets the token from token.py
+from TOKEN import BUNGIEAPIKEY
 
-client = Bot(command_prefix="!")
+client = Bot(command_prefix="?")
 #does the whole bitcoin thing
 @client.command()
 async def invest():
@@ -19,15 +20,22 @@ async def invest():
         await client.say("Are you seriously asking me about bitcoin? Stop it already")
     await client.say("Bitcoin price is: " + value)
 
-#Links a youtube video
-@client.command()
-async def play():
-    await client.say("This should be a good song for ya")
-    await client.say("https://www.youtube.com/watch?v=HZ5m_nlfZe4&list=RDHZ5m_nlfZe4&start_radio=1")
-
 @client.command()
 async def sean():
-    await client.say("Seansux")
+    userName = "sr_jeebs/"
+    getUserUrl = "https://www.bungie.net/Platform//Destiny2/SearchDestinyPlayer/2/" + userName
+    response = requests.get(getUserUrl, headers={"X-API-Key": BUNGIEAPIKEY})
+    value = response.json()
+
+    membershipId = value["Response"][0]["membershipId"] #gets a bungie user membershipId
+
+    getStatsUrl = "https://www.bungie.net/Platform/Destiny2/2/Account/" + membershipId + "/Stats/"
+    response5 = requests.get(getStatsUrl, headers={"X-API-Key": BUNGIEAPIKEY})
+    value5 = response5.json()
+    deathsPvp = value5["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["deaths"]["basic"]["value"]
+    deathsPve = value5["Response"]["mergedAllCharacters"]["results"]["allPvE"]["allTime"]["deaths"]["basic"]["value"]
+
+    await client.say("Sean has died a total of " + str(int(deathsPve + deathsPvp)) + " times")
 
 @client.command()
 async def sports():
@@ -64,4 +72,35 @@ async def weather(zip : str):
         await client.say("Uh, we failed cap'n")
     except KeyError:
         await client.say("Nope, didn't find that zip")
+
+#gets a bunch of arguments, instead of just one at a time
+@client.command()
+async def test(*args):
+    await client.say('{} arguments: {}'.format(len(args), ', '.join(args)))
+
+@client.command()
+async def image():
+    await client.say('https://ichef.bbci.co.uk/news/660/cpsprodpb/71E1/production/_99735192_gettyimages-459467912.jpg')
+
+@client.command()
+async def getKd(userName : str):
+    getUserUrl = "https://www.bungie.net/Platform//Destiny2/SearchDestinyPlayer/2/" + userName
+    response = requests.get(getUserUrl, headers={"X-API-Key": BUNGIEAPIKEY})
+    value = response.json()
+    membershipId = value["Response"][0]["membershipId"] #gets a bungie user membershipId
+
+    getStatsUrl = "https://www.bungie.net/Platform/Destiny2/2/Account/" + membershipId + "/Stats/"
+    response2 = requests.get(getStatsUrl, headers={"X-API-Key": BUNGIEAPIKEY})
+    value2 = response2.json()
+
+    kills = value2["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["kills"]["basic"]["value"]
+    deaths = value2["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["deaths"]["basic"]["value"]
+    killDeath = round((kills/deaths), 2)
+
+    await client.say("PVP kill/death: " + str(killDeath))
+
+@client.command()
+async def helloWorld():
+    await client.say("!play Never gonna give you up")
+
 client.run(TOKEN)
