@@ -1,26 +1,27 @@
 # https://github.com/Rapptz/discord.py/blob/async/examples/reply.py
-#import discord
+import discord
 import requests #allows for the api calls
 
 from discord.ext.commands import Bot
 from TOKEN import TOKEN #gets the token from token.py
 from TOKEN import BUNGIEAPIKEY
 
-client = Bot(command_prefix="?")
+bot = Bot(command_prefix="?")
+
 #does the whole bitcoin thing
-@client.command()
+@bot.command()
 async def invest():
     url = "https://api.coindesk.com/v1/bpi/currentprice/BTC.json"
     response = requests.get(url)
     value = response.json()['bpi']['USD']['rate']
     value = value.replace(",", "") #doesn't work if there are commas
     if float(value) > 8000:
-        await client.say("INVEST! Bitcoin is amazing.")
+        await bot.say("INVEST! Bitcoin is amazing.")
     else:
-        await client.say("Are you seriously asking me about bitcoin? Stop it already")
-    await client.say("Bitcoin price is: " + value)
+        await bot.say("Are you seriously asking me about bitcoin? Stop it already")
+    await bot.say("Bitcoin price is: " + value)
 
-@client.command()
+@bot.command()
 async def jeebs():
     userName = "sr_jeebs/"
     getUserUrl = "https://www.bungie.net/Platform//Destiny2/SearchDestinyPlayer/2/" + userName
@@ -35,27 +36,27 @@ async def jeebs():
     deathsPvp = value5["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["deaths"]["basic"]["value"]
     deathsPve = value5["Response"]["mergedAllCharacters"]["results"]["allPvE"]["allTime"]["deaths"]["basic"]["value"]
 
-    await client.say("Sean has died a total of " + str(int(deathsPve + deathsPvp)) + " times")
+    await bot.say("Sean has died a total of " + str(int(deathsPve + deathsPvp)) + " times")
 
-@client.command()
+@bot.command()
 async def sports():
-    await client.say("Never play MLB The Show, not even once")
+    await bot.say("Never play MLB The Show, not even once")
 
-@client.command()
+@bot.command()
 async def scoops():
-    await client.say("#chrispaulsux")
+    await bot.say("#chrispaulsux")
 
 #NOTE: figure out a way to get this activating daily?
 #see discord python tutorial part 2
-@client.command()
+@bot.command()
 async def motivate():
     url = "http://quotes.rest/qod.json"
     response = requests.get(url)
     value = response.json()
     qod = value['contents']['quotes'][0]['quote']
-    await client.say(qod)
+    await bot.say(qod)
 
-@client.command()
+@bot.command()
 async def weather(zip : str):
     apiKey = '13c40a7680f1a39e960be305fa7e46f2'
     metric = "&units=metric"
@@ -67,22 +68,22 @@ async def weather(zip : str):
         temp = (float(value['main']['temp']) * 1.8) + 32
         intTemp = int(temp)
 
-        await client.say("The temperature at zip code " + zip + " is " + str(intTemp))
+        await bot.say("The temperature at zip code " + zip + " is " + str(intTemp))
     except requests.exceptions.RequestException as e:  # This is the correct syntax
-        await client.say("Uh, we failed cap'n")
+        await bot.say("Uh, we failed cap'n")
     except KeyError:
-        await client.say("Nope, didn't find that zip")
+        await bot.say("Nope, didn't find that zip")
 
 #gets a bunch of arguments, instead of just one at a time
-@client.command()
+@bot.command()
 async def test(*args):
-    await client.say('{} arguments: {}'.format(len(args), ', '.join(args)))
+    await bot.say('{} arguments: {}'.format(len(args), ', '.join(args)))
 
-@client.command()
+@bot.command()
 async def image():
-    await client.say('https://ichef.bbci.co.uk/news/660/cpsprodpb/71E1/production/_99735192_gettyimages-459467912.jpg')
+    await bot.say('https://ichef.bbci.co.uk/news/660/cpsprodpb/71E1/production/_99735192_gettyimages-459467912.jpg')
 
-@client.command()
+@bot.command()
 async def getKd(userName : str):
     getUserUrl = "https://www.bungie.net/Platform//Destiny2/SearchDestinyPlayer/2/" + userName
     response = requests.get(getUserUrl, headers={"X-API-Key": BUNGIEAPIKEY})
@@ -97,9 +98,9 @@ async def getKd(userName : str):
     deaths = value2["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["deaths"]["basic"]["value"]
     killDeath = round((kills/deaths), 2)
 
-    await client.say("PVP kill/death: " + str(killDeath))
+    await bot.say("PVP kill/death: " + str(killDeath))
 
-@client.command()
+@bot.command()
 async def efficiency(userName : str):
     getUserUrl = "https://www.bungie.net/Platform//Destiny2/SearchDestinyPlayer/2/" + userName
     response = requests.get(getUserUrl, headers={"X-API-Key": BUNGIEAPIKEY})
@@ -115,10 +116,20 @@ async def efficiency(userName : str):
     assists = value2["Response"]["mergedAllCharacters"]["results"]["allPvP"]["allTime"]["assists"]["basic"]["value"]
     efficiency = round(((kills + assists)/deaths), 2)
 
-    await client.say("PVP efficiency: " + str(efficiency))
+    await bot.say("PVP efficiency: " + str(efficiency))
 
-@client.command()
+#this is how you get the context, which is from the first parameter
+@bot.command(pass_context = True)
+async def test2(ctx):
+    #gets the author's tag
+    member = ctx.message.author
+    #member.mention will tag the author in with it
+    #Documentation for the member object:
+    #https://discordpy.readthedocs.io/en/rewrite/api.html#discord.Member
+    await bot.say("Greetings " + str(member.mention))
+
+@bot.command()
 async def helloWorld():
-    await client.say("!play Never gonna give you up")
+    await bot.say("!play Never gonna give you up")
 
-client.run(TOKEN)
+bot.run(TOKEN)
