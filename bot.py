@@ -1,12 +1,34 @@
 # https://github.com/Rapptz/discord.py/blob/async/examples/reply.py
 import discord
 import requests #allows for the api calls
+import xml.etree.cElementTree as ET
 
 from discord.ext.commands import Bot
 from TOKEN import TOKEN #gets the token from token.py
 from TOKEN import BUNGIEAPIKEY
 
 bot = Bot(command_prefix="?")
+
+
+@bot.command()
+async def xml(type: str, category: str, message: str):
+    if type == "write":
+        root = ET.Element('root')
+        ET.SubElement(root, category).text = message
+        tree = ET.ElementTree(root)
+        tree.write('bot.xml')
+    elif type == "get":
+        root = tree.getroot()
+        output = ''
+        for child in root:
+            if child.text == message:
+                output = child.text
+        if output == '':
+            await bot.say('Message not found')
+        else:
+            await bot.say('Message: ' + output)
+    else:
+        await bot.say('Command not recognized')
 
 #does the whole bitcoin thing
 @bot.command()
@@ -37,14 +59,6 @@ async def jeebs():
     deathsPve = value5["Response"]["mergedAllCharacters"]["results"]["allPvE"]["allTime"]["deaths"]["basic"]["value"]
 
     await bot.say("Sean has died a total of " + str(int(deathsPve + deathsPvp)) + " times")
-
-@bot.command()
-async def sports():
-    await bot.say("Never play MLB The Show, not even once")
-
-@bot.command()
-async def scoops():
-    await bot.say("#chrispaulsux")
 
 #NOTE: figure out a way to get this activating daily?
 #see discord python tutorial part 2
@@ -78,6 +92,9 @@ async def weather(zip : str):
 @bot.command()
 async def test(*args):
     await bot.say('{} arguments: {}'.format(len(args), ', '.join(args)))
+
+
+
 
 @bot.command()
 async def image():
