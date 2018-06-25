@@ -14,13 +14,12 @@ tree = ET.parse('bot.xml')
 root = tree.getroot()
 if action == 'write':
     #if there is something to write
-    print (len(sys.argv))
     if len(sys.argv) == 3:
         ET.SubElement(root, "item").text = sys.argv[2]
         tree = ET.ElementTree(root)
         tree.write('bot.xml')
     else:
-        print("Please provide a value to write")
+        print("Too few arguments. Please provide a value to write")
 elif action == 'read':
     for item in root:
         print(item.text)
