@@ -1,13 +1,49 @@
 # https://github.com/Rapptz/discord.py/blob/async/examples/reply.py
 import discord
-import requests #allows for the api calls
+import requests #allows for the api
 import xml.etree.cElementTree as ET
 
 from discord.ext.commands import Bot
+from discord.ext.commands import MemberConverter
 from TOKEN import TOKEN #gets the token from token.py
 from TOKEN import BUNGIEAPIKEY
 
 bot = Bot(command_prefix="?")
+
+
+@bot.command(pass_context = True)
+async def createTeam(ctx, teamName: str):
+    #teamName should be in the tag
+    #the author should be inserted as a member of that team
+    userName = ctx.message.author
+    tree = ET.parse('bot.xml')
+    root = tree.getroot()
+    team = ET.SubElement(root, 'team')
+    team.set('teamName', teamName)
+    team.set('creator', str(userName))
+    #adding user as a member of the team
+    member = ET.SubElement(team, 'member')
+    member.text = str(userName)
+
+    tree.write('bot.xml')
+
+    await bot.say("Created team with name: " + teamName)
+
+@bot.command(pass_context = True)
+async def addMember(ctx, member: discord.Member):
+    userName = ctx.message.author
+    value = str(member)
+    print(str(member))
+    print (value)
+    tree = ET.parse('bot.xml')
+    root = tree.getroot()
+    for team in root:
+        #find the group
+        if team.get('creator') == str(userName):
+            member = ET.SubElement(team, 'member')
+            member.text = value
+    tree.write('bot.xml')
+    await bot.say("Added member")
 
 
 @bot.command()
