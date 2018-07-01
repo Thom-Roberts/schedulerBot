@@ -23,5 +23,14 @@ if action == 'write':
 elif action == 'read':
     for item in root:
         print(item.text)
+elif action == 'remove':
+    if(len(sys.argv) < 2):
+        value = input("Which element would you like to remove?")
+    else:
+        value = sys.argv[2]
+    for item in root.findall('item'):
+        if(value == item.text):
+            root.remove(item)
+    tree.write('bot.xml')
 else:
     print("Command not recognized")
