@@ -21,9 +21,10 @@ async def createTeam(ctx, teamName: str):
     team.set('teamName', teamName)
     team.set('creator', str(userName))
 
-    member = ET.Element("member")
+    
 
     for x in range(6):
+        member = ET.Element("member")
         team.append(member)
     
 
