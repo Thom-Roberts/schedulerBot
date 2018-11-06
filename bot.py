@@ -10,7 +10,6 @@ from TOKEN import BUNGIEAPIKEY
 
 bot = Bot(command_prefix="?")
 
-
 @bot.command(pass_context = True)
 async def createTeam(ctx, teamName: str):
     #teamName should be in the tag
@@ -21,9 +20,17 @@ async def createTeam(ctx, teamName: str):
     team = ET.SubElement(root, 'team')
     team.set('teamName', teamName)
     team.set('creator', str(userName))
-    #adding user as a member of the team
-    member = ET.SubElement(team, 'member')
-    member.text = str(userName)
+
+    member = ET.Element("member")
+
+    for x in range(6):
+        team.append(member)
+    
+
+    #TODO: Add leader as the first member
+    team[0].text = str(userName)
+    team[1].text = "asdf"
+
 
     tree.write('bot.xml')
 
