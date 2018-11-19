@@ -38,20 +38,33 @@ async def createTeam(ctx, teamName: str):
     await bot.say("Created team with name: " + teamName)
 
 @bot.command(pass_context = True)
-async def addMember(ctx, member: discord.Member):
+async def addTo(ctx, member1: discord.Member):
     userName = ctx.message.author
-    value = str(member)
-    print(str(member))
-    print (value)
     tree = ET.parse('bot.xml')
     root = tree.getroot()
-    for team in root:
-        #find the group
-        if team.get('creator') == str(userName):
-            member = ET.SubElement(team, 'member')
-            member.text = value
-    tree.write('bot.xml')
-    await bot.say("Added member")
+    memberAdded = False
+    FailMessage = (str(member1) + ' was not added to the team')
+    SuccessMessage = (str(member1) + ' was added successfully')
+    for team in root.iter('team'):
+        print(team.attrib)
+        for member in team.iter('member'):
+            if member.text == None:
+                member.text = str(member1)
+                print(member.text)
+                memberAdded = True
+                break
+            #print(member.text)
+    
+    
+    message = ''
+    if memberAdded == False:
+        message = FailMessage
+    else:
+        message = SuccessMessage
+        tree.write('bot.xml')
+
+   
+    await bot.say(message)
 
 
 @bot.command()
