@@ -97,6 +97,19 @@ async def removeFrom(ctx, teamName: str, member1: discord.Member):
 
     await bot.say(message)
 
+@bot.command(pass_context = True)
+async def showTeam(ctx, teamName: str):
+    tree = ET.parse('bot.xml')
+    root = tree.getroot()
+    default_message = 'Team currently constists of: '
+    member_list = ''
+    for team in root.iter('team'):
+        if teamName == team.attrib['teamName']:
+            for member in team.iter('member'):
+                member_list += member.text
+    
+    await bot.say(default_message + member_list)
+
 
 @bot.command()
 async def xml(type: str, category: str, message: str):
