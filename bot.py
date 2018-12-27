@@ -19,42 +19,47 @@ async def createTeam(ctx, teamName: str):
     root = tree.getroot()
     team = ET.SubElement(root, 'team')
     team.set('teamName', teamName)
-    team.set('creator', str(userName))
-
-    
+    team.set('leader', str(userName))
 
     for x in range(6):
         member = ET.Element("member")
         team.append(member)
     
-
-    #TODO: Add leader as the first member
+    # Add leader as the first member
     team[0].text = str(userName)
-    team[1].text = "asdf"
-
 
     tree.write('bot.xml')
 
     await bot.say("Created team with name: " + teamName)
 
 @bot.command(pass_context = True)
-async def addTo(ctx, member1: discord.Member):
+async def addTo(ctx, teamName: str, member1: discord.Member):
     userName = ctx.message.author
     tree = ET.parse('bot.xml')
     root = tree.getroot()
     memberAdded = False
+    duplicateMember = False
     FailMessage = (str(member1) + ' was not added to the team')
     SuccessMessage = (str(member1) + ' was added successfully')
+
     for team in root.iter('team'):
-        print(team.attrib)
-        for member in team.iter('member'):
-            if member.text == None:
-                member.text = str(member1)
-                print(member.text)
-                memberAdded = True
-                break
-            #print(member.text)
-    
+        if teamName == team.attrib['teamName']:
+            for member in team.iter('member'):
+                """
+                    Stop on each member
+                    Check if the name equals the input member
+                    if it does match, then we can set a local bool
+                    Our if statement can include that local bool and make sure it equal false
+                """
+                if member.text == str(member1):
+                    duplicateMember = True
+                    memberAdded = False
+
+                if member.text == None and duplicateMember == False:
+                    member.text = str(member1)
+                    print(member.text)
+                    memberAdded = True
+                    duplicateMember = True
     
     message = ''
     if memberAdded == False:
@@ -62,8 +67,34 @@ async def addTo(ctx, member1: discord.Member):
     else:
         message = SuccessMessage
         tree.write('bot.xml')
+  
+    await bot.say(message)
 
-   
+
+@bot.command(pass_context = True)
+async def removeFrom(ctx, teamName: str, member1: discord.Member):
+
+    tree = ET.parse('bot.xml')
+    root = tree.getroot()
+    memberRemoved = False
+    FailMessage = (str(member1) + ' was not removed to the team')
+    SuccessMessage = (str(member1) + ' was removed successfully')
+
+    for team in root.iter('team'):
+        if teamName == team.attrib['teamName']:
+            for member in team.iter('member'):
+                if member.text == str(member1):
+                    member.text = None
+                    memberRemoved = True
+                    break
+    
+    message = ''
+    if memberRemoved == False:
+        message = FailMessage
+    else:
+        message = SuccessMessage
+        tree.write('bot.xml')
+
     await bot.say(message)
 
 
